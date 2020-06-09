@@ -1,89 +1,124 @@
-import React from 'react';
-import {Component} from 'react';
-import "./App.css";
-import PokeCard from './components/Cards/pokemon-card';
+import React, { Component } from 'react';
+import Grid from '@material-ui/core/Grid';
+// import Header from  "./Header";
+import PokemonCard from  "./components/Cards/PokemonCard";
+import SearchField from "./components/Search/Search";
+import WeaknessesFilter from "./components/Filter/weaknessess";
+import TypeFilter from "./components/Filter/type";
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
 
-function searchingFor(term) {
-    return function(x) {
-        return x.name.toLowerCase().includes(term.toLowerCase()) || !term;
-    }
-}
 
-function searchingWeakness(weaknesses) {
-    return function(x) {
-        return x.weaknesses.map(weakValue => {
-            return weakValue.toLowerCase().includes(weakValue.toLowerCase()) || !weaknesses;
-        })
-    }
-}
+
+const POKEMON_LIST_URL = 'https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json';
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-        pokemons : [],
-        term : '',
-        weaknesses: '',
+    constructor(props) {
+        super(props);
+        this.state = {
+            pokemons: [],
+            displayedPokemons: [],
+            query: "",
+            weaknessFilter: "",
+            heightFilter: ""
+        };
     }
-    this.searchHandler = this.searchHandler.bind(this);
-    this.searchHandlerWeak = this.searchHandlerWeak.bind(this);
-  }
-  searchHandler(event) {
-    this.setState({term: event.target.value})
-  }
 
-    searchHandlerWeak(event) {
-        this.setState({weaknesses: event.target.value})
+    componentDidMount() {
+        fetch(POKEMON_LIST_URL).then((response) => {
+            response.json().then((data) => {
+                this.setState({
+                    pokemons: data.pokemon,
+                    displayedPokemons: data.pokemon
+                })
+            });
+        });
     }
-  componentDidMount() {
-    let url = "https://raw.githubusercontent.com/Biuni/PokemonGO-Pokedex/master/pokedex.json";
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-          if (data) {
-            this.setState({pokemons : data.pokemon}, () => {})
-          }
+
+    handleSearch(event) {
+        let query = event.target.value;
+
+        let displayedPokemons = this.state.pokemons.filter(pokemon =>
+            pokemon.name.toLowerCase().includes(query.toLowerCase()) || pokemon.type.join().toLowerCase().includes(query.toLowerCase())
+        );
+
+        this.setState({
+            displayedPokemons: displayedPokemons
         })
-        .catch(console.log)
-  }
+    }
 
-  render() {
-    const {pokemons, term, weaknesses} = this.state;
+    filterByWeakness(event) {
+        let weaknessFilter = event.target.value;
+        this.setState({
+            weaknessFilter: weaknessFilter
+        });
 
-    const renderedPokemonList = pokemons.filter(searchingFor(term)).map((pokemon, index) => {
-      return (<PokeCard pokemon={pokemon} />);
-    });
+        if (weaknessFilter === 0) {
+            this.setState({
+                displayedPokemons: this.state.pokemons
+            })
+        } else {
+            let displayedPokemons = this.state.pokemons.filter(pokemon =>
+                pokemon.weaknesses.join().toLowerCase().includes(weaknessFilter.toLowerCase())
+            );
 
-    const renderedweaknessList = pokemons.filter(searchingWeakness(weaknesses)).map((pokemon, index) => {
-        return (<PokeCard pokemon={pokemon} />);
-    })
+            this.setState({
+                displayedPokemons: displayedPokemons
+            });
 
-    return (
-        <div>
-        <form>
-            <input type="text"
-                onChange={this.searchHandler}
-            />
-            <label>
-                Weakness:
-                <select onChange={this.searchHandlerWeak}>
-                    <option value="fire">Fire</option>
-                    <option value="ice">Ice</option>
-                    <option value="flying">Coconut</option>
-                    <option value="Psychic">Psychic</option>
-                </select>
-            </label>
-        </form>
+        }
+    }
 
-        <div className="container">
-            <div className="card-columns">
-                {renderedPokemonList}
-                {renderedweaknessList}
+    filterByType(event) {
+
+        let types = event.target.value;
+        this.setState({
+            heightFilter: types
+        });
+
+        if (types === 0) {
+            this.setState({
+                displayedPokemons: this.state.pokemons
+            })
+        } else {
+            let displayedPokemons = this.state.pokemons.filter(pokemon =>
+                pokemon.type.join().toLowerCase().includes(types.toLowerCase())
+            );
+            this.setState({
+                displayedPokemons: displayedPokemons
+            });
+        }
+
+    }
+
+    render() {
+        const { displayedPokemons } = this.state;
+        return (
+            <div>
+                <AppBar position="fixed">
+                    <Toolbar>
+                        <Typography fontWeight="fontWeightBold" letterSpacing={15} variant="h5" noWrap style={{width: '50%'}}>
+                            POKEMON SEARCH
+                        </Typography>
+                        <SearchField onChange={this.handleSearch.bind(this)} value={this.state.query}/>
+                        <WeaknessesFilter onChange={this.filterByWeakness.bind(this)} value={this.state.weaknessFilter}/>
+                        <TypeFilter onChange={this.filterByType.bind(this)} value={this.state.heightFilter}/>
+                    </Toolbar>
+                </AppBar>
+                <main>
+                    <Toolbar />
+                        <Grid container spacing={2} justify="space-evenly" style={{paddingTop:'2%'}}>
+                            {displayedPokemons.map(pokemon =>
+                        <Grid key={pokemon.id} item xs={2}>
+                            <PokemonCard name={pokemon.name} img={pokemon.img} weaknesses={pokemon.weaknesses} type={pokemon.type}/>
+                        </Grid>
+                    )}
+                    <div style={{content: "", flex: 'auto'}} />
+                </Grid>
+                </main>
             </div>
-        </div>
-        </div>
-    );
-  }
+        );
+    }
 }
-
 export default App;
