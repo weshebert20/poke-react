@@ -2,6 +2,8 @@
 
 Search app created with pokemon API. Able to search based on name, weakness, and/or type
 
+![alt text](readmepic.png)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
