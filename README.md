@@ -1,12 +1,20 @@
 # Pokemon Search App
 
-Search app created with pokemon API. Able to search based on name, weakness, and/or type
+Search app created with pokemon API. Able to search based on name, weakness, and/or type. Used material UI to quickly tighten things up.
 
 ![alt text](readmepic.png)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## To-DO
+
+still would like to add page/modal/slideout for when card is clicked
+
 ## Available Scripts
+
+### `npm install`
+
+### `npm start`
 
 In the project directory, you can run:
 

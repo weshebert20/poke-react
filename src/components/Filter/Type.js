@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const TYPE = [
+const Type = [
     "Bug",
     "Electric",
     "Dragon",
@@ -43,7 +43,7 @@ export default function TypeFilter(props) {
 
     const classes = useStyles();
 
-    let types = TYPE;
+    let types = Type;
 
     return (
         <div>
