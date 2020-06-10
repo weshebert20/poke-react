@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
         '&:hover': {
             backgroundColor: fade(theme.palette.common.white, 0.25),
         },
-        marginRight: 0,
+        marginRight: 10,
         width: 'auto',
         [theme.breakpoints.up('sm')]: {
             width: 'auto',

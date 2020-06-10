@@ -8,6 +8,7 @@ import TypeFilter from "./components/Filter/Type";
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import {types} from "@babel/core";
 
 
 
@@ -21,7 +22,7 @@ class App extends Component {
             displayedPokemons: [],
             query: "",
             weaknessFilter: "",
-            heightFilter: ""
+            typesFilter: ""
         };
     }
 
@@ -37,6 +38,7 @@ class App extends Component {
     }
 
     handleSearch(event) {
+        console.log(event);
         let query = event.target.value;
 
         let displayedPokemons = this.state.pokemons.filter(pokemon =>
@@ -48,49 +50,49 @@ class App extends Component {
         })
     }
 
-    filterByWeakness(event) {
-        let weaknessFilter = event.target.value;
-        this.setState({
-            weaknessFilter: weaknessFilter
-        });
+    filterAll(event) {
 
-        if (weaknessFilter === 0) {
+        let weak = 0;
+        let typeOf = 0;
+        let displayedPokemons
+        if (event.target.name === "type-filter") {
+            typeOf = event.target.value;
             this.setState({
-                displayedPokemons: this.state.pokemons
+                typesFilter: typeOf
             })
-        } else {
-            let displayedPokemons = this.state.pokemons.filter(pokemon =>
-                pokemon.weaknesses.join().toLowerCase().includes(weaknessFilter.toLowerCase())
-            );
-
+        }
+        if (event.target.name === "weakness-filter") {
+            weak = event.target.value;
             this.setState({
-                displayedPokemons: displayedPokemons
-            });
+                weaknessFilter: weak
+            })
+        }
+        if (event) {
+            if (typeOf === 0 || weak === 0) {
+                this.setState({
+                    displayedPokemons: this.state.pokemons
+                })
+            }
+            if (typeOf !== 0 ) {
+                displayedPokemons = this.state.displayedPokemons.filter(pokemon =>
+                    pokemon.type.join().toLowerCase().includes(typeOf.toLowerCase())
+                );
+                this.setState({
+                    displayedPokemons: displayedPokemons
+                });
+            } else if (weak !== 0) {
+                displayedPokemons= this.state.displayedPokemons.filter(pokemon =>
+                    pokemon.weaknesses.join().toLowerCase().includes(weak.toLowerCase()) && pokemon.type.join().toLowerCase().includes(this.state.typesFilter.toLowerCase())
+            );
+                this.setState({
+                    displayedPokemons: displayedPokemons
+                });
+            }
 
         }
-    }
-
-    filterByType(event) {
-
-        let types = event.target.value;
-        this.setState({
-            heightFilter: types
-        });
-
-        if (types === 0) {
-            this.setState({
-                displayedPokemons: this.state.pokemons
-            })
-        } else {
-            let displayedPokemons = this.state.pokemons.filter(pokemon =>
-                pokemon.type.join().toLowerCase().includes(types.toLowerCase())
-            );
-            this.setState({
-                displayedPokemons: displayedPokemons
-            });
-        }
 
     }
+
 
     render() {
         const { displayedPokemons } = this.state;
@@ -102,20 +104,20 @@ class App extends Component {
                             POKEMON SEARCH
                         </Typography>
                         <SearchField onChange={this.handleSearch.bind(this)} value={this.state.query}/>
-                        <WeaknessesFilter onChange={this.filterByWeakness.bind(this)} value={this.state.weaknessFilter}/>
-                        <TypeFilter onChange={this.filterByType.bind(this)} value={this.state.heightFilter}/>
+                        <TypeFilter onChange={this.filterAll.bind(this)} value={this.state.typesFilter}/>
+                        <WeaknessesFilter onChange={this.filterAll.bind(this)} value={this.state.weaknessFilter} />
                     </Toolbar>
                 </AppBar>
                 <main>
                     <Toolbar />
-                        <Grid container spacing={2} justify="space-evenly" style={{paddingTop:'2%'}}>
-                            {displayedPokemons.map(pokemon =>
-                        <Grid key={pokemon.id} item xs={2}>
-                            <PokemonCard name={pokemon.name} img={pokemon.img} weaknesses={pokemon.weaknesses} type={pokemon.type}/>
-                        </Grid>
-                    )}
-                    <div style={{content: "", flex: 'auto'}} />
-                </Grid>
+                    <Grid  container spacing={2} justify="space-evenly" style={{paddingTop:'2%'}}>
+                        {displayedPokemons.map(pokemon =>
+                            <Grid key={pokemon.id} item xs={2}>
+                                <PokemonCard name={pokemon.name} img={pokemon.img} weaknesses={pokemon.weaknesses} type={pokemon.type}/>
+                            </Grid>
+                        )}
+                        <div style={{content: "", flex: 'auto'}} />
+                    </Grid>
                 </main>
             </div>
         );
