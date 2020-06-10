@@ -8,7 +8,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## To-DO
 
-still would like to add page/modal/slideout for when card is clicked
+- still would like to add page/modal/slideout for when card is clicked
+- make responsive
 
 ## Available Scripts
 
